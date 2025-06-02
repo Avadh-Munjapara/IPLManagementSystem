@@ -1,12 +1,18 @@
-const express=require('express');
-const userRoutes=require('./routes/userRoute');
-const playerRoutes=require('./routes/playerRoute');
-const teamRoutes=require('./routes/teamRoutes');
-const app=express();
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors'
+import userrouter from './routes/userRoute.js';
 
-app.use('/api/v1/users',userRoutes);
-app.use('/api/v1/player',playerRoutes);
-app.use('/api/v1/team',teamRoutes);
-app.listen(8000,()=>{
-    console.log("Server is running on port 8000");
+dotenv.config()
+
+const app = express()
+app.use(cors())
+
+const port = process.env.PORT || 5000 ;
+
+app.use('/api/user',userrouter)
+
+app.listen(port,()=>{
+    console.log(`Server is running on port ${port}`);
+    
 })
