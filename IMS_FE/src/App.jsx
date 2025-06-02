@@ -1,10 +1,9 @@
-import React from 'react'
-import 
-
+import React from 'react';
+import Login from './pages/Login';
 const App = () => {
-  const appRouter = cre
+
   return (
-    <div>App</div>
+<Login/>
   )
 }
 
