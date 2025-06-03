@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { createTeam } = require("../controllers/team");
+const { createTeam } = require("../controllers/teamController");
 
 const router=Router();
 
