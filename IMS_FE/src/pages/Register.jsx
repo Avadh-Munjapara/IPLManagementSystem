@@ -1,8 +1,13 @@
 import React from 'react'
+import { Toaster } from 'react-hot-toast'
 
 const Register = () => {
   return (
-    <div>Register</div>
+    <>
+    <div>
+      avadh
+    </div>
+</>
   )
 }
 
