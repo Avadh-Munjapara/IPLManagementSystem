@@ -5,7 +5,7 @@ const Register = () => {
   return (
     <>
     <div>
-      avadh
+      hello 
     </div>
 </>
   )

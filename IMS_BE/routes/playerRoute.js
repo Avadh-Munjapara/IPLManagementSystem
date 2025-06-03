@@ -2,8 +2,9 @@ const { Router } = require("express");
 const { addPlayer } = require("../controllers/player");
 
 
-const router=Router();
+const playerRouter=Router();
 
-router.post("/addPlayer",addPlayer);
+playerRouter.post("/addPlayer",addPlayer);
 
-module.exports=router;
+
+export default playerRouter;

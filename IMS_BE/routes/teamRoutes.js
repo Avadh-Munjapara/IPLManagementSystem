@@ -1,8 +1,8 @@
 const { Router } = require("express");
 const { createTeam } = require("../controllers/team");
 
-const router=Router();
+const teamRouter=Router();
 
-router.post("/createTeam",createTeam);
+teamRouter.post("/createTeam",createTeam);
 
-module.exports=router;
+export default teamRouter;
