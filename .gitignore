@@ -5,3 +5,4 @@ IMS_FE/.env
 # Ignore node_modules in backend and frontend
 IMS_BE/node_modules/
 IMS_FE/node_modules/
+IMS_FE/node_modules/
