@@ -23,15 +23,15 @@ const teamSchema = new mongoose.Schema({
     },
     captain:{
         type:mongoose.Schema.ObjectId,
-        ref:'user'
+        ref:'User'
     },
     squad:[{
         type:mongoose.Schema.ObjectId,
-        ref:'user'
+        ref:'User'
     }]
     
 })
 
-const teamModel = mongoose.model("teams",teamSchema)
+const teamModel = mongoose.model("Team",teamSchema)
 
 export default teamModel;
