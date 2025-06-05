@@ -1,13 +1,17 @@
 import bcrypt from 'bcrypt';
 import userModel from '../models/userModel.js';
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 export const registerUser = async (req, res) => {
   try {
-
   const { name,email,password,phone } = req.body;
+  console.log(req.body);
   
   if (!name || !email || !password || !phone) {
-    return res.status(400).json({ 
+    return res.json({ 
         message: 'Please Fill All The Fields' ,
         success: false
     });
@@ -15,7 +19,7 @@ export const registerUser = async (req, res) => {
   
   const existingUser = await userModel.findOne({ email });
   if (existingUser) {
-      return res.status(400).json({ 
+      return res.json({ 
         message: 'Email already exists' ,
         success: false
     });
@@ -30,13 +34,13 @@ export const registerUser = async (req, res) => {
     });
 
     await newUser.save();
-    return res.status(200).json({ 
+    return res.json({ 
         message: 'User registered successfully',
-        success: true
+        success: true,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ 
+    res.json({ 
         message: 'Internal server error' ,
         success: false
     });
@@ -47,7 +51,7 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ 
+    return res.json({ 
         message: 'Please Fill All The Fields' ,
         success: false
     });
@@ -56,7 +60,7 @@ export const loginUser = async (req, res) => {
   try {
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.status(400).json({ 
+      return res.json({ 
         message: 'Invalid email or password' ,
         success: false
     });
@@ -64,20 +68,28 @@ export const loginUser = async (req, res) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ 
+      return res.json({ 
         message: 'Invalid email or password' ,
         success: false
     });
     }
-
-    res.status(200).json({ 
+    const payload = {
+    id: user._id,
+    email: user.email,
+    role: user.role
+  };
+    const token =  jwt.sign(payload,process.env.JWT_SECRET_KEY,{
+      expiresIn:'30d'
+    })
+    res.json({ 
         message: 'Login successful',
         success: true,
+        token,
+        id:user._id,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ 
-        message: 'Internal server error' ,
+    res.json({ 
+        message: error.message ,
         success: false
     });
   }
