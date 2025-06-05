@@ -16,25 +16,27 @@ const Register = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async(e) => {
-   try {
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await ApiServices.register(form); // expect 2xx
 
-     e.preventDefault();
-    const response = await ApiServices.register(form)
-    console.log(response.data);
-        
-    if(!response.data.success) {
-        toast.error(response.data.message);
+    const data = response.data;
+    if (!data.success) {
+      toast.error(data.message);
+    } else {
+      toast.success(data.message);
+      navigate('/login');
     }
-    toast.success(response.data.message);
-    navigate('/login');
-   
-   } catch (error) {
-    console.log(error);
+  } catch (error) {
+    // 400s, 500s come here
+    const msg = error.response?.data?.message || "Something went wrong";
+    toast.error(msg);
+    console.error("Registration error:", error.response?.data);
+  }
+};
+
     
-   }
-    
-  };
   return (
       <div className="min-h-screen bg-cover bg-center flex items-center justify-center" style={{backgroundImage: `url(${bg})` }}>
       <div className="bg-white/70 rounded-2xl shadow-xl p-8 w-full max-w-md">
@@ -48,17 +50,9 @@ const Register = () => {
               placeholder="Full Name"
               value={form.name}
               onChange={handleChange}
+              autoComplete='username'
               className="w-full p-3 border bg-blue-50 border-gray-300 rounded-lg"
-              required
-            />
-             <input
-              type="text"
-              name="phone"
-              placeholder="Phone Number"
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full p-3 border bg-blue-50 border-gray-300 rounded-lg"
-              required
+              // required
             />
           <input
             type="email"
@@ -66,8 +60,9 @@ const Register = () => {
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
+            autoComplete='email'
             className="w-full p-3 border bg-blue-50  border-gray-300 rounded-lg"
-            required
+            // required
           />
           <input
             type="password"
@@ -75,9 +70,20 @@ const Register = () => {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
+            autoComplete='password'
             className="w-full p-3 border bg-blue-50 border-gray-300 rounded-lg"
-            required
+            // required
           />
+           <input
+              type="text"
+              name="phone"
+              placeholder="Phone Number"
+              value={form.phone}
+              onChange={handleChange}
+              autoComplete='phone'
+              className="w-full p-3 border bg-blue-50 border-gray-300 rounded-lg"
+              // required
+            />
           <button
             type="submit"
             className="w-full bg-green-700 text-white p-3 rounded-lg hover:bg-green-800 transition duration-300"

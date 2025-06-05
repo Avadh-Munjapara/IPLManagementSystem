@@ -15,27 +15,28 @@ const Login = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    try {
-      const response = await ApiServices.login(form);
-      const data = response.data;
-      console.log(data);
-
-      if (data.success) {
-        toast.success(data.message);
-        navigate("/dashboard");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      
-      toast.error(error?.response?.data?.message);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await ApiServices.login(form);
+    const data = response.data;
+    
+    if (!data.success) {
+      toast.error(data.message);
+    } else {
+      localStorage.setItem('id',data.id)
+      localStorage.setItem('token',data.token)
+      toast.success(data.message);
+      navigate('/dashboard');
     }
-  };
+  } catch (error) {
+    const msg = error.response?.data?.message || "Something went wrong";
+    toast.error(msg);
+  }
+};
+
   return (
-    <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+    <div className="min-h-screen bg-cover bg-center flex items-center justify-center"
       style={{ backgroundImage: `url(${bg})` }}
     >
       <div className="bg-white/70 rounded-2xl shadow-xl p-8 w-full max-w-md">
@@ -48,9 +49,10 @@ const Login = () => {
             name="email"
             placeholder="Email"
             value={form.email}
+            autoComplete="email"
             onChange={handleChange}
             className="w-full p-3 border bg-blue-50  border-gray-300 rounded-lg"
-            required
+            // required
           />
           <input
             type="password"
@@ -58,8 +60,9 @@ const Login = () => {
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
+            autoComplete="current-password"
             className="w-full p-3 border bg-blue-50 border-gray-300 rounded-lg"
-            required
+            // required
           />
           <button
             type="submit"
