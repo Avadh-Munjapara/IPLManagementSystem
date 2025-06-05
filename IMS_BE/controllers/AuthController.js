@@ -1,21 +1,20 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import userModel from '../models/usermodel';
-import { use } from 'react';
+import userModel from '../models/userModel.js';
 
 export const registerUser = async (req, res) => {
-  const { name,email,password,phone } = req.body;
+  try {
 
+  const { name,email,password,phone } = req.body;
+  
   if (!name || !email || !password || !phone) {
     return res.status(400).json({ 
         message: 'Please Fill All The Fields' ,
         success: false
     });
   }
-
-  try {
-    const existingUser = await userModel.findOne({ email });
-    if (existingUser) {
+  
+  const existingUser = await userModel.findOne({ email });
+  if (existingUser) {
       return res.status(400).json({ 
         message: 'Email already exists' ,
         success: false
@@ -31,7 +30,7 @@ export const registerUser = async (req, res) => {
     });
 
     await newUser.save();
-    res.status(201).json({ 
+    return res.status(200).json({ 
         message: 'User registered successfully',
         success: true
     });
