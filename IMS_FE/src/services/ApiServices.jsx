@@ -1,13 +1,9 @@
-import axios from 'axios';
+// services/authService.js
+import apiClient from './AxiosClient';
 
-const baseURL = import.meta.env.VITE_API_URL;
+const ApiServices = {
+  register: (data) => apiClient.post('/api/user/register', data),
+  login: (data) => apiClient.post('/api/user/login',data),
+};
 
-const apiClient = axios.create({
-  baseURL: baseURL,
-  withCredentials: true, 
-});
-
-export default  {
-    login:() => apiClient.post('/auth/login'),
-    register: (userData) => apiClient.post('/auth/register', userData),
-}
+export default ApiServices;

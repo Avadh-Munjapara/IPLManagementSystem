@@ -1,18 +1,24 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors'
-import userrouter from './routes/userRoute.js';
+import userRouter from './routes/userRoute.js';
+import connectdb from './config/ConnectDB.js';
 
 dotenv.config()
 
 const app = express()
-app.use(cors())
+const port = process.env.PORT || 8000 ;
+app.use(express.json())
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true
+}))
 
-const port = process.env.PORT || 5000 ;
 
-app.use('/api/user',userrouter)
+app.use('/api/user',userRouter)
 
 app.listen(port,()=>{
-    console.log(`Server is running on port ${port}`);
-    
-})
+     console.log("server is running")
+     connectdb();
+ }) 
+
