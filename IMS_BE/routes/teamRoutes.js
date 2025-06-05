@@ -1,8 +1,25 @@
-const { Router } = require("express");
-const { createTeam } = require("../controllers/teamController");
+import express from "express";
+import {
+  createTeam,
+  editTeamForTo,
+  editTeamForAdmin,
+  removeTeam,
+  getAllTeams,
+  getTeam,
+} from "../controllers/teamController.js";
 
-const router=Router();
+const router = express.Router();
 
-router.post("/createTeam",createTeam);
+router.post("/create", createTeam);
 
-module.exports=router;
+router.put("/editForTo", editTeamForTo);
+
+router.put("/editForAdmin", editTeamForAdmin);
+
+router.delete("/remove", removeTeam);
+
+router.get("/all", getAllTeams);
+
+router.get("/:id", getTeam);
+
+export default router;
