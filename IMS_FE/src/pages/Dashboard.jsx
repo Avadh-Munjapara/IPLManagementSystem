@@ -105,7 +105,7 @@ const Dashboard = () => {
                 <Link to='/dashboard/manageteams' className="text-white px-5 py-3 text-lg flex items-center hover:bg-blue-500 transition">
                   <IoEye size={25} className="mr-2" />Manage Team
                 </Link>
-                <Link to='/dashboard/players' className="text-white px-5 py-3 text-lg flex items-center hover:bg-blue-500 transition">
+                <Link to='/dashboard/manageplayer' className="text-white px-5 py-3 text-lg flex items-center hover:bg-blue-500 transition">
                   <MdOutlineManageAccounts size={25} className="mr-2" />Manage Player
                 </Link>
                 <button onClick={logout} className="text-white px-5 py-3 text-lg flex items-center hover:bg-blue-500 transition text-left">

@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import ApiServices from '../services/ApiServices'; // ensure this contains necessary team APIs
-import toast from 'react-hot-toast';
+import React, { useEffect, useState } from 'react'
 
-const ManageTeams = () => {
+const ManagePlayer = () => {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
 const [form, setForm] = useState({
@@ -163,6 +161,6 @@ const [form, setForm] = useState({
       </div>
     </div>
   );
-};
+}
 
-export default ManageTeams;
+export default ManagePlayer
