@@ -7,6 +7,7 @@ import {
   removeTeam,
   getAllTeams,
   getTeam,
+  getTeamsByOwner,
 } from "../controllers/teamController.js";
 import upload from "../middleware/multer.js";
 
@@ -22,6 +23,8 @@ teamRouter.put("/editForTo", editTeamForTo);
 teamRouter.put("/editForAdmin", editTeamForAdmin);
 
 teamRouter.delete("/remove", removeTeam);
+
+teamrouter.get("/ownerTeam/:ownerId", getTeamsByOwner);
 
 teamRouter.get("/:id", getTeam);
 
