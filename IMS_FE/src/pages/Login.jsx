@@ -20,12 +20,16 @@ const handleSubmit = async (e) => {
   try {
     const response = await ApiServices.login(form);
     const data = response.data;
+    console.log(data);  
+    
     
     if (!data.success) {
       toast.error(data.message);
     } else {
       localStorage.setItem('id',data.id)
       localStorage.setItem('token',data.token)
+      localStorage.setItem('name',data.name)
+      localStorage.setItem('image',data.profile_pic)
       toast.success(data.message);
       navigate('/dashboard');
     }

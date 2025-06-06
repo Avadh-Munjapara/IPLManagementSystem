@@ -1,8 +1,10 @@
 import playerModel from "../models/playerModel.js";
+import userModel from "../models/userModel.js";
+import uploadimageclodinary from "../utils/cloudinaryUpload.js";
 
 export const getPlayers = async (req, res) => {
   try {
-    const players = await playerModel.find();
+    const players = await playerModel.find().populate('player', 'name  profile_pic').populate('playing_for' , 'name'); // populate if you want user info
     if (!players) {
       return res.json({
         message: "No players found",
@@ -21,10 +23,12 @@ export const getPlayers = async (req, res) => {
     });
   }
 };
+
 export const getPlayerById = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // id is the user id
   try {
-    const player = await playerModel.findById(id);
+    // Find the player document where 'player' field matches the user id
+    const player = await playerModel.findOne({ player: id }).populate('player', 'name email profile_pic'); // populate if you want user info
     if (!player) {
       return res.json({
         message: "Player not found",
@@ -34,7 +38,7 @@ export const getPlayerById = async (req, res) => {
     return res.json({
       message: "Player retrieved successfully",
       success: true,
-      data: player
+      player // return as 'player' for frontend consistency
     });
   } catch (error) {
     return res.json({
@@ -43,6 +47,7 @@ export const getPlayerById = async (req, res) => {
     });
   }
 };
+
 export const getPlayerByName = async (req, res) => {
   const { name } = req.params;
   try {
@@ -65,58 +70,84 @@ export const getPlayerByName = async (req, res) => {
   }
 };
 export const addPlayer = async (req, res) => {
-    const {jersey_number, matches_played, runs, wickets, catches, stumpings, role } = req.body;
-    const { id } = req.user; 
+    const {name,email,jersey_number, matches_played, runs,fours,sixes, wickets, catches, stumpings, role } = req.body;
+    const profile = req.file;
     try {
+
+      const user =  await userModel.findOne({ email: email });
+      user.role = "PLAYER";
+      const id = user._id;
+      user.save();
         const newPlayer = new playerModel({
             player: id,
             jersey_number,
             matches_played,
             runs,
+            fours,
+            sixes,
             wickets,
             catches,
             stumpings,
             role
         });
         await newPlayer.save();
-        return res.status(201).json({
+        return res.json({
             message: "Player added successfully",
             success: true,
         });
     } catch (error) {
-        return res.status(500).json({
+      console.log(error);
+      
+        return res.json({
             message: "Internal server error",
             success: false
         });
     }
 }
 export const updatePlayer = async (req, res) => {
-  const { id } = req.params;
-  const { jersey_number, matches_played, runs, wickets, catches, stumpings, role } = req.body;
+  const { jersey_number, matches_played, runs,fours,sixes, wickets, catches, stumpings, role , id } = req.body;
+  const profile = req.file;
+  
   try {
+
+    if (profile) {
+      var logoUpload = await uploadimageclodinary(profile);      
+       const updatedPlayer = await playerModel.findById(id).populate('player', 'name email profile_pic');
+       if(updatePlayer){
+        console.log(updatePlayer);
+        updatedPlayer.player.profile_pic = logoUpload.secure_url;
+         const res= await updatedPlayer.player.save();
+       }
+    }
     const updatedPlayer = await playerModel.findByIdAndUpdate(id, {
       jersey_number,
       matches_played,
       runs,
+      fours,
+      sixes,
       wickets,
       catches,
       stumpings,
       role
     }, { new: true });
+
+
     
     if (!updatedPlayer) {
-      return res.status(404).json({
+      return res.json({
         message: "Player not found",
         success: false
       });
     }
     
-    return res.status(200).json({
+    return res.json({
       message: "Player updated successfully",
       success: true,
     });
   } catch (error) {
-    return res.status(500).json({
+          console.log(error)
+
+    return res.json({
       message: "Internal server error",
       success: false
     });
