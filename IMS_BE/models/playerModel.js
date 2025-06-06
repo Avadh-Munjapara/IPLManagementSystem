@@ -7,7 +7,7 @@ const playerSchema = new mongoose.Schema({
     required: true,
   },
   jersey_number: {
-    type: Number,
+    type: String,
   },
   mathces_played:{
     type: Number,

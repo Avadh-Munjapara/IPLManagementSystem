@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard";
 import ProfilePage from "./component/ProfilePage";
 import ManageTeams from "./component/ManageTeams";
 import ManageTeamTo from "./component/ManageTeamTo";
+import ManagePlayer from "./component/ManagePlayer";
+
 const App = () => {
   const myRouter = createBrowserRouter([
     { path: "/", element: <Register /> },
@@ -16,6 +18,7 @@ const App = () => {
         {path:'/dashboard/manageteams',element:<ManageTeams/>,},
         {path:'/dashboard/profile',element:<ProfilePage/>},
         {path:'/dashboard/manageTeamTo',element:<ManageTeamTo/>},
+        {path:'/dashboard/manageplayer', element:<ManagePlayer/>},
       ]
     }
   ]);

@@ -16,10 +16,13 @@ const Dashboard = () => {
   const [loader, setloader] = useState(true);
   const [userData, setuserData] = useState();
 
-  const [user, setuser] = useState(false);
-  const [admin, setadmin] = useState(false);
-  const [player, setplayer] = useState(false);
-  const [teamOwner, setteamOwner] = useState(false);
+  const [loader, setloader] = useState(true)
+  const [userData, setuserData] = useState()
+
+  const [user, setuser] = useState(false)
+  const [admin, setadmin] = useState(true)
+  const [player, setplayer] = useState(false)
+  const [teamOwner, setteamOwner] = useState(false)
 
   const fetchUser = async () => {
     try {
@@ -36,6 +39,7 @@ const Dashboard = () => {
       } else {
         setuser(true);
       }
+
     } catch (error) {
       console.log(error.message);
     }
@@ -53,19 +57,16 @@ const Dashboard = () => {
   };
 
   return (
-    <LoadingContext.Provider value={{ loading, setLoading }}>
-      <div className="w-full h-screen flex overflow-hidden">
-        <div className="w-1/5 h-full bg-gray-800 flex flex-col overflow-y-auto">
-          <div className="text-white h-[18%] text-lg text-center p-5 border-b-4 border-white flex items-center">
-            <img
-              src={profile}
-              alt="profile"
-              className="h-24 w-24 rounded-full"
-            />
-            <p className="ml-5 font-bold text-lg"></p>
-          </div>
-          <div className="flex flex-col gap-5 mt-6">
-            {user && (
+    <div className="w-full h-screen flex">
+      <div className="w-1/5 h-full bg-gray-800 flex flex-col overflow-y-auto">
+        <div className="text-white h-[18%] text-lg text-center p-5 border-b-4 border-white flex items-center">
+          <img src={profile} alt="profile" className="h-24 w-24 rounded-full" />
+          <p className="ml-5 font-bold text-lg"></p>
+
+        </div>
+        <div className="flex flex-col gap-5 mt-6">
+          {
+            user && (
               <>
                 <Link
                   to="/dashboard/profile"
@@ -102,6 +103,7 @@ const Dashboard = () => {
                   to="/dashboard/profile"
                   className="text-white px-5 py-3 text-lg flex items-center hover:bg-blue-500 transition"
                 >
+
                   <CgProfile size={22} className="mr-2" /> Profile
                 </Link>
                 <Link
@@ -149,6 +151,7 @@ const Dashboard = () => {
                   to="/dashboard/profile"
                   className="text-white px-5 py-3 text-lg flex items-center hover:bg-blue-500 transition"
                 >
+
                   <CgProfile size={25} className="mr-2" /> Profile
                 </Link>
                 <Link
@@ -164,6 +167,7 @@ const Dashboard = () => {
                 >
                   <MdOutlineManageAccounts size={25} className="mr-2" />
                   Manage Player
+
                 </Link>
                 <button
                   onClick={logout}
@@ -184,6 +188,7 @@ const Dashboard = () => {
         )}
       </div>
     </LoadingContext.Provider>
+
   );
 };
 

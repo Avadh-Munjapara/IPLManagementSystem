@@ -1,8 +1,10 @@
-const { Router } = require("express");
-const { addPlayer } = require("../controllers/player");
+import { getPlayers } from "../controllers/playerController.js";
+import express from 'express'
 
 
-const router=Router();
-router.post("/addPlayer",addPlayer);
+const playerRouter=express.Router();
 
-module.exports=router;
+playerRouter.get('/getAll',getPlayers);
+// playerRouter.post("/addPlayer",addPlayer);
+
+export default playerRouter;

@@ -1,48 +1,53 @@
 import teamModel from "../models/teamModel.js";
+import userModel from "../models/userModel.js";
+import uploadimageclodinary from "../utils/cloudinaryUpload.js";
 import imageUpload from "../utils/cloudinaryUpload.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 export const createTeam = async (req, res) => { 
   try {
-    const { name, tag_line, state, short_name, captain, squad,owners } = req.body;
-    const { logo } = req?.files;
+    const { name, tag_line, state, short_name,owners } = req.body;  
+    const  logo  = req.file;
     if (!name || !tag_line || !state || !logo || !owners) {
-      res.status(400).json({
+      return res.json({
         success: false,
         message: "required fields are missing!",
       });
     }
     if (logo) {
-      var logoUpload = await imageUpload(logo, process.env.FOLDERNAME);
+      var logoUpload = await uploadimageclodinary(logo);      
     }
-
+    const ownerNames = req.body.owners.split(',').map(o => o.trim());
+    const ownerDocs = await userModel.find({ name: { $in: ownerNames } });
+    // const ownerIds = ownerDocs.map(user => user._id);
+    console.log(ownerDocs);
+    
     const created_team = await teamModel.create({
       name,
       tag_line,
       state,
-      owners,
+      owners:ownerDocs,
       logo: logoUpload?.secure_url || null,
       sort_name: short_name || null,
-      captain: captain || null,
-      squad: squad || [],
     });
 
-    if (created_team) {
-      return res.status(200).json({
+    if (created_team) {      
+      return res.json({
         success: true,
         message: "team created",
         created_team,
       });
     } else {
-      return res.status(500).json({
+      return res.json({
         success: false,
         message: "team not created",
       });
     }
   } catch (error) {
-    return res.status(500).json({
+    return res.json({
       success: false,
-      error: error.message,
+      message: error.message,
     });
   }
 };
@@ -53,7 +58,7 @@ export const editTeamForTo = async (req, res) => {
     const logo=req?.files?.logo;
     const team = await teamModel.findById(id);
     if (!team) {
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "Team not found",
       });
@@ -75,13 +80,13 @@ export const editTeamForTo = async (req, res) => {
       { new: true }
     );  
 
-    return res.status(200).json({
+    return res.json({
       success: true,
       message: "Team updated successfully",
       updatedTeam,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.json({
       success: false,
       message: "Internal server error",
       error: error.message,
@@ -95,7 +100,7 @@ export const editTeamForAdmin = async (req, res) => {
 
     const team = await teamModel.findById(id);
     if (!team) {
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "Team not found",
       });
@@ -111,13 +116,13 @@ export const editTeamForAdmin = async (req, res) => {
       { new: true }
     );
 
-    return res.status(200).json({
+    return res.json({
       success: true,
       message: "Team updated successfully",
       updatedTeam,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.json({
       success: false,
       message: "Internal server error",
       error: error.message,
@@ -127,12 +132,11 @@ export const editTeamForAdmin = async (req, res) => {
 
 export const removeTeam = async (req, res) => {
   try {
-        console.log(req);
     const { id } = req.body;
 
     const team = await teamModel.findById(id);
     if (!team) {
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "Team not found",
       });
@@ -140,13 +144,12 @@ export const removeTeam = async (req, res) => {
 
     const deletedTeam = await teamModel.findByIdAndDelete(id);
 
-    return res.status(200).json({
+    return res.json({
       success: true,
       message: "Team deleted successfully",
-      deletedTeam,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.json({
       success: false,
       message: "Internal server error",
       error: error.message,
@@ -156,21 +159,18 @@ export const removeTeam = async (req, res) => {
 
 export const getAllTeams = async (req, res) => {
   try {
-    const teams = await teamModel
-      .find()
+    const teams = await teamModel.find()
       .populate("captain", "name role jersey_number")
       .populate("squad", "name role jersey_number")
-      .populate("owners", "name");
-
-    return res.status(200).json({
+      .populate("owners", "name");    
+    return res.json({
       success: true,
-      teams,
+      teams
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.json({
       success: false,
-      message: "Internal server error",
-      error: error.message,
+      message:error.message || "Internal server error",
     });
   }
 };
@@ -179,7 +179,7 @@ export const getTeam = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
-      return res.status(400).json({
+      return res.json({
         success: false,
         message: "Team ID is required",
       });
@@ -189,12 +189,12 @@ export const getTeam = async (req, res) => {
       .populate("captain", "name role jersey_number")
       .populate("squad", "name role jersey_number")
       .populate("owners", "name");
-    return res.status(200).json({
+    return res.json({
       success: true,
       team,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.json({
       success: false,
       message: "Internal server error",
       error: error.message,
