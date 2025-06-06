@@ -19,6 +19,7 @@ const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const response = await ApiServices.login(form);
+    console.log(response);
     const data = response.data;
     console.log(data);  
     
@@ -34,6 +35,7 @@ const handleSubmit = async (e) => {
       navigate('/dashboard');
     }
   } catch (error) {
+    console.log(error);
     const msg = error.response?.data?.message || "Something went wrong";
     toast.error(msg);
   }
@@ -72,7 +74,7 @@ const handleSubmit = async (e) => {
             type="submit"
             className="w-full bg-green-700 text-white p-3 rounded-lg hover:bg-green-800 transition duration-300"
           >
-            <BiSolidCricketBall className="inline mr-2" size={25} />
+            <BiSolidCricketBall className="inline mr-2 cursor-pointer" size={25} />
             Login
           </button>
         </form>

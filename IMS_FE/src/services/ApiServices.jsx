@@ -12,6 +12,8 @@ const ApiServices = {
   getUserById:(id) => apiClient.get(`/api/user/getUserById/${id}`),
 
   //team related services
+  getTemaByOwner: (ownerId) => apiClient.get(`/api/teams/ownerTeam/${ownerId}`),
+
   getAllTeams:()=>apiClient.get('/api/team/all'),
   createTeam:(data)=>apiClient.post('/api/team/create',data), 
   editTeamForTo:(data)=>apiClient.put('/api/team/editForTo',data),
