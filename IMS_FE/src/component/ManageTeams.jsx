@@ -20,7 +20,6 @@ const ManageTeams = () => {
     try {
       const res = await ApiServices.getAllTeams();
       setTeams(res.data.teams || []);
-      console.log(res)
     } catch (err) {
       console.log(err)
       toast.error('Failed to fetch teams');
@@ -98,14 +97,17 @@ const handleLogoChange = (e) => {
     }
   };
 
-  const printOwnersName=(owners)=>{
-    let names='';
-    for(const owner of owners){
-      names+=owner.name+" ";
-    }
-    return names;
+  const printOwnersName = (owners) => {
+  return owners
+    .map(owner =>
+      owner.name
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ')
+    )
+    .join(', ');
+};
 
-  }
 
   return (
     <div className="p-5 w-full min-h-screen bg-gray-50">

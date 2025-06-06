@@ -9,7 +9,7 @@ const playerSchema = new mongoose.Schema({
   jersey_number: {
     type: String,
   },
-  mathces_played:{
+  matches_played:{
     type: Number,
     default: 0,
   },
