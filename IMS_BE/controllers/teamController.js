@@ -49,8 +49,8 @@ export const createTeam = async (req, res) => {
 
 export const editTeamForTo = async (req, res) => {
   try {
-    const { id, name, tag_line, short_name, captain } = req.body;
-    const {logo}=req.files;
+    const { id, name, tag_line, short_name, captain,squad } = req.body;
+    const logo=req?.files?.logo;
     const team = await teamModel.findById(id);
     if (!team) {
       return res.status(404).json({
@@ -70,6 +70,7 @@ export const editTeamForTo = async (req, res) => {
         short_name: short_name || team.short_name,
         captain: captain || team.captain,
         logo: logoUpload?.secure_url || team.logo,
+        squad: squad || team.squad,
       },
       { new: true }
     );  
@@ -185,6 +186,33 @@ export const getTeam = async (req, res) => {
     }
     const team = await teamModel
       .findOne({ _id: id })
+      .populate("captain", "name role jersey_number")
+      .populate("squad", "name role jersey_number")
+      .populate("owners", "name");
+    return res.status(200).json({
+      success: true,
+      team,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export const getTeamsByOwner = async (req, res) => {
+  try {
+    const { ownerId } = req.params;
+    if (!ownerId) {
+      return res.status(400).json({
+        success: false,
+        message: "Owner ID is required",
+      });
+    }
+    const team = await teamModel
+      .findOne({ owners: {$in:[ownerId] }})
       .populate("captain", "name role jersey_number")
       .populate("squad", "name role jersey_number")
       .populate("owners", "name");

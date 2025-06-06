@@ -6,6 +6,7 @@ import {
   removeTeam,
   getAllTeams,
   getTeam,
+  getTeamsByOwner,
 } from "../controllers/teamController.js";
 
 const router = express.Router();
@@ -21,5 +22,7 @@ router.delete("/remove", removeTeam);
 router.get("/all", getAllTeams);
 
 router.get("/:id", getTeam);
+
+router.get("/ownerTeam/:ownerId", getTeamsByOwner);
 
 export default router;
