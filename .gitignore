@@ -4,8 +4,12 @@ IMS_FE/.env
 
 # Ignore node_modules in backend and frontend
 IMS_BE/node_modules/
+<<<<<<< HEAD
 IMS_FE/node_modules/
 <<<<<<< HEAD
 IMS_FE/node_modules/
 =======
 >>>>>>> 405bc48 (use live share)
+=======
+IMS_FE/node_modules/
+>>>>>>> 5e35c91 (delted node modules)

@@ -1,22 +1,30 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors'
-import userRouter from './routes/userRoute.js';
-import connectdb from './config/ConnectDB.js';
-
+import userrouter from './routes/userRoute.js';
+import fileUpload from 'express-fileupload';
+import cloudinaryConnection from './config/cloudinary.js';
+import connectdb from './config/connectDB.js';
+import teamRouter from './routes/teamRoutes.js';
+import playerRouter from './routes/playerRoute.js';
 dotenv.config()
 
 const app = express()
-const port = process.env.PORT || 8000 ;
-app.use(express.json())
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
+    origin: 'http://localhost:5173',
+    credentials:true 
 }))
+// app.use(fileUpload({
+//     useTempFiles:true,
+//     tempFileDir:'./uploads', 
+// }));
+const port = process.env.PORT || 5000 ;
+app.use(express.json());
+cloudinaryConnection();
 
-
-app.use('/api/user',userRouter)
-
+app.use('/api/user',userrouter)
+app.use("/api/team", teamRouter);
+app.use('/api/player',playerRouter)
 app.listen(port,()=>{
      console.log("server is running")
      connectdb();

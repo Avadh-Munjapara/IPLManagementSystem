@@ -1,75 +1,120 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import ApiServices from '../services/ApiServices';
+import toast from 'react-hot-toast';
 
 const ManagePlayer = () => {
-  const [teams, setTeams] = useState([]);
+  const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
-const [form, setForm] = useState({
-  name: '',
-  tag_line: '',
-  state: '',
-  logo: '',
-  sort_name: '',
-  captain: '',  // assuming you select this from a list of users
-});
-  const [editingTeamId, setEditingTeamId] = useState(null);
+  const [formVisible, setFormVisible] = useState(false);
+  const [image, setImage] = useState(null);
+  const [editingPlayerId, setEditingPlayerId] = useState(null);
 
-  // Fetch all teams
-  const fetchTeams = async () => {
+  const [form, setForm] = useState({
+    name: '',
+    jersy_number: '',
+    mathces_played: 0,
+    runs: 0,
+    fours: 0,
+    sixes: 0,
+    wickets: 0,
+    catches: 0,
+    stumpings: 0,
+    role: '',
+  });
+
+  const fetchPlayers = async () => {
     try {
-      const res = await ApiServices.getAllTeams();
-      setTeams(res.data.teams); // assuming the response structure
+      const res = await ApiServices.getPlayers();
+      setPlayers(res.data.players || []);
     } catch (err) {
-      toast.error('Failed to fetch teams');
+      toast.error('Failed to fetch players');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTeams();
+    fetchPlayers();
   }, []);
 
-  // Handle input changes
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: name === 'mathces_played' || name === 'runs' || name === 'fours' || name === 'sixes' || name === 'wickets' || name === 'catches' || name === 'stumpings'
+        ? parseInt(value)
+        : value,
+    }));
   };
 
-  // Add or update team
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    if (image) formData.append('image', image);
+
     try {
-      if (editingTeamId) {
-        await ApiServices.updateTeam(editingTeamId, form);
-        toast.success('Team updated successfully');
+      const res = editingPlayerId
+        ? await ApiServices.updatePlayer(editingPlayerId, formData)
+        : await ApiServices.createPlayer(formData);
+
+      if (res.data.success) {
+        toast.success(`Player ${editingPlayerId ? 'updated' : 'added'} successfully`);
+        setForm({
+          name: '',
+          jersy_number: '',
+          mathces_played: 0,
+          runs: 0,
+          fours: 0,
+          sixes: 0,
+          wickets: 0,
+          catches: 0,
+          stumpings: 0,
+          role: '',
+        });
+        setImage(null);
+        setEditingPlayerId(null);
+        setFormVisible(false);
+        fetchPlayers();
       } else {
-        await ApiServices.addTeam(form);
-        toast.success('Team added successfully');
+        toast.error(res.data.message);
       }
-      setForm({ name: '', owner: '', city: '' });
-      setEditingTeamId(null);
-      fetchTeams();
     } catch (err) {
       toast.error('Something went wrong');
     }
   };
 
-  // Edit handler
-  const handleEdit = (team) => {
+  const handleEdit = (player) => {
     setForm({
-      name: team.name,
-      owner: team.owner,
-      city: team.city,
+      name: player.name,
+      jersy_number: player.jersy_number,
+      mathces_played: player.mathces_played,
+      runs: player.runs,
+      fours: player.fours,
+      sixes: player.sixes,
+      wickets: player.wickets,
+      catches: player.catches,
+      stumpings: player.stumpings,
+      role: player.role,
     });
-    setEditingTeamId(team._id);
+    setEditingPlayerId(player._id);
+    setFormVisible(true);
   };
 
-  // Delete handler
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this team?")) {
+    if (window.confirm("Are you sure you want to delete this player?")) {
       try {
-        await ApiServices.deleteTeam(id);
-        toast.success('Team deleted');
-        fetchTeams();
+        await ApiServices.deletePlayer({ id });
+        toast.success('Player deleted');
+        fetchPlayers();
       } catch (err) {
         toast.error('Delete failed');
       }
@@ -77,90 +122,136 @@ const [form, setForm] = useState({
   };
 
   return (
-    <div className="p-5 w-[100%]">
-      <h2 className="text-2xl font-bold mb-4 text-center">Manage Teams</h2>
+    <div className="p-5 w-full min-h-screen bg-gray-50">
+      <h2 className="text-3xl font-bold mb-4 text-center">Manage Players</h2>
 
-      {/* Section 1: Add/Update Form */}
-      <div className="bg-white p-5 rounded-lg shadow mb-6">
-        <h3 className="text-xl font-semibold mb-3">{editingTeamId ? 'Update Team' : 'Add New Team'}</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="Team Name"
-            className="w-full border p-2 rounded"
-            required
-          />
-          <input
-            type="text"
-            name="owner"
-            value={form.owner}
-            onChange={handleChange}
-            placeholder="Owner Name"
-            className="w-full border p-2 rounded"
-            required
-          />
-          <input
-            type="text"
-            name="city"
-            value={form.city}
-            onChange={handleChange}
-            placeholder="City"
-            className="w-full border p-2 rounded"
-            required
-          />
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            {editingTeamId ? 'Update Team' : 'Add Team'}
-          </button>
-        </form>
+      <div className="text-center mb-4">
+        <button
+          onClick={() => {
+            setFormVisible(!formVisible);
+            setEditingPlayerId(null);
+            setForm({
+              name: '',
+              jersy_number: '',
+              mathces_played: 0,
+              runs: 0,
+              fours: 0,
+              sixes: 0,
+              wickets: 0,
+              catches: 0,
+              stumpings: 0,
+              role: '',
+            });
+            setImage(null);
+          }}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          {formVisible ? 'Close Form' : 'Add New Player'}
+        </button>
       </div>
 
-      {/* Section 2: List of Teams */}
+      <div className={`transition-all duration-500 overflow-hidden ${formVisible ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-5 rounded-lg shadow mb-6">
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label className="block font-medium">Player Name</label>
+      <input type="text" name="name" value={form.name} onChange={handleChange} className="w-full border p-2 rounded" required />
+    </div>
+
+    <div>
+      <label className="block font-medium">Jersey Number</label>
+      <input type="text" name="jersy_number" value={form.jersy_number} onChange={handleChange} className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Matches Played</label>
+      <input type="number" name="mathces_played" value={form.mathces_played} onChange={handleChange} className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Runs</label>
+      <input type="number" name="runs" value={form.runs} onChange={handleChange} className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Fours</label>
+      <input type="number" name="fours" value={form.fours} onChange={handleChange} className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Sixes</label>
+      <input type="number" name="sixes" value={form.sixes} onChange={handleChange} className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Wickets</label>
+      <input type="number" name="wickets" value={form.wickets} onChange={handleChange} className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Catches</label>
+      <input type="number" name="catches" value={form.catches} onChange={handleChange} className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Stumpings</label>
+      <input type="number" name="stumpings" value={form.stumpings} onChange={handleChange} className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Role</label>
+      <input type="text" name="role" value={form.role} onChange={handleChange} placeholder="Batsman/Bowler/All-rounder" className="w-full border p-2 rounded" />
+    </div>
+
+    <div>
+      <label className="block font-medium">Player Image</label>
+      <input type="file" name="image" accept="image/*" onChange={handleImageChange} className="w-full border p-2 rounded" />
+    </div>
+  </div>
+
+  <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    {editingPlayerId ? 'Update Player' : 'Add Player'}
+  </button>
+</form>
+
+      </div>
+
       <div className="bg-white p-5 rounded-lg shadow">
-        <h3 className="text-xl font-semibold mb-4">All Teams</h3>
+        <h3 className="text-xl font-semibold mb-4">All Players</h3>
         {loading ? (
-          <p>Loading teams...</p>
+          <p>Loading players...</p>
+        ) : !Array.isArray(players) || players.length === 0 ? (
+          <p className="text-gray-500 text-center">No players found.</p>
         ) : (
-          <table className="w-full border">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="p-2 border">Name</th>
-                <th className="p-2 border">Owner</th>
-                <th className="p-2 border">City</th>
-                <th className="p-2 border">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teams.map((team) => (
-                <tr key={team._id}>
-                  <td className="p-2 border">{team.name}</td>
-                  <td className="p-2 border">{team.owner}</td>
-                  <td className="p-2 border">{team.city}</td>
-                  <td className="p-2 border space-x-2">
-                    <button onClick={() => handleEdit(team)} className="text-blue-600 font-semibold">
-                      Edit
-                    </button>
-                    <button onClick={() => handleDelete(team._id)} className="text-red-600 font-semibold">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {teams.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="text-center py-4 text-gray-500">
-                    No teams found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <div className="space-y-6">
+            {players.map((player) => (
+              <div key={player._id} className="bg-gray-100 p-4 rounded-lg shadow-md flex flex-col sm:flex-row items-center gap-4">
+                {player.image && (
+                  <img src={player.image} alt="Player" className="w-24 h-24 object-contain rounded-full" />
+                )}
+                <div className="flex-1">
+                  <h4 className="text-xl font-bold">{player.name}</h4>
+                  <p className="text-sm text-gray-600">Role: {player.role}</p>
+                  <p className="text-sm text-gray-600">Jersey No: {player.jersy_number}</p>
+                  <p className="text-sm text-gray-600">Matches: {player.mathces_played}</p>
+                  <p className="text-sm text-gray-600">Runs: {player.runs} | 4s: {player.fours} | 6s: {player.sixes}</p>
+                  <p className="text-sm text-gray-600">Wickets: {player.wickets} | Catches: {player.catches} | Stumpings: {player.stumpings}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => handleEdit(player)} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(player._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
   );
-}
+};
 
-export default ManagePlayer
+export default ManagePlayer;

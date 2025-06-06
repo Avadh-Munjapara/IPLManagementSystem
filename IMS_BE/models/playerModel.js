@@ -7,13 +7,21 @@ const playerSchema = new mongoose.Schema({
     required: true,
   },
   jersey_number: {
-    type: Number,
+    type: String,
   },
   mathces_played:{
     type: Number,
     default: 0,
   },
   runs: {
+    type: Number,
+    default: 0,
+  },
+  fours:{
+    type: Number,
+    default: 0,
+  },
+  sixes:{
     type: Number,
     default: 0,
   },
@@ -29,10 +37,18 @@ const playerSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  strike_rate:{
+    type: Number,
+    default: 0,
+  },
   role:{
     type: String,
     enum: ["Batsman", "Bowler", "All-Rounder", "Wicket-Keeper"],
     default: "batsman",
+  },
+  playing_for:{
+    type: mongoose.Schema.ObjectId,
+    ref: "Team",
   }
 });
 

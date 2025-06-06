@@ -1,8 +1,28 @@
-const { Router } = require("express");
-const { createTeam } = require("../controllers/team");
+import express from "express";
+import multer from "multer";
+import {
+  createTeam,
+  editTeamForTo,
+  editTeamForAdmin,
+  removeTeam,
+  getAllTeams,
+  getTeam,
+} from "../controllers/teamController.js";
+import upload from "../middleware/multer.js";
 
-const router=Router();
 
-router.post("/createTeam",createTeam);
+const teamRouter = express.Router();
 
-module.exports=router;
+teamRouter.get("/all", getAllTeams);
+
+teamRouter.post("/create",upload.single('logo'),createTeam);
+
+teamRouter.put("/editForTo", editTeamForTo);
+
+teamRouter.put("/editForAdmin", editTeamForAdmin);
+
+teamRouter.delete("/remove", removeTeam);
+
+teamRouter.get("/:id", getTeam);
+
+export default teamRouter;

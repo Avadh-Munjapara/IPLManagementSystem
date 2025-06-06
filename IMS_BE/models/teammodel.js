@@ -13,11 +13,11 @@ const teamSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    logo:{
+    logo:{  
         type:String,
         default:""
     },
-    sort_name:{
+    short_name:{
         type:String,
         default:""
     },
@@ -28,10 +28,13 @@ const teamSchema = new mongoose.Schema({
     squad:[{
         type:mongoose.Schema.ObjectId,
         ref:'User'
-    }]
+    }],
+    owners:[{
+        type:mongoose.Schema.ObjectId,
+        ref:'User'
+    }],
     
 })
+const teamModel = mongoose.model("Team",teamSchema);
+export default teamModel ;
 
-const teamModel = mongoose.model("Team",teamSchema)
-
-export default teamModel;

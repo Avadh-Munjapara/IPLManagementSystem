@@ -14,7 +14,7 @@ import ApiServices from '../services/ApiServices';
 const Dashboard = () => {
 
   const [loader, setloader] = useState(true)
-  const [userData,setuserData] = useState()
+  const [userData, setuserData] = useState()
 
   const [user, setuser] = useState(false)
   const [admin, setadmin] = useState(true)
@@ -25,7 +25,7 @@ const Dashboard = () => {
     try {
       const response = await ApiServices.getUser();
       const data = response.data
-      const role = data.user.role     
+      const role = data.user.role
       setuserData(data.user)
       if (role == "ADMIN") { setadmin(true) }
       else if (role == "PLAYER") { setplayer(true) }
@@ -49,7 +49,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="w-full h-screen flex overflow-hidden">
+    <div className="w-full h-screen flex">
       <div className="w-1/5 h-full bg-gray-800 flex flex-col overflow-y-auto">
         <div className="text-white h-[18%] text-lg text-center p-5 border-b-4 border-white flex items-center">
           <img src={profile} alt="profile" className="h-24 w-24 rounded-full" />
@@ -77,7 +77,7 @@ const Dashboard = () => {
           }
           {
             player && (
-                <>
+              <>
                 <Link to='/dashboard/profile' className="text-white px-5 py-3 text-lg flex items-center hover:bg-blue-500 transition">
                   <CgProfile size={22} className="mr-2" /> Profile
                 </Link>
@@ -98,7 +98,7 @@ const Dashboard = () => {
           }
           {
             admin && (
-                <>
+              <>
                 <Link to='/dashboard/profile' className="text-white px-5 py-3 text-lg flex items-center hover:bg-blue-500 transition">
                   <CgProfile size={25} className="mr-2" /> Profile
                 </Link>
@@ -117,15 +117,16 @@ const Dashboard = () => {
 
         </div>
       </div>
-          {
-            loader ? (
-              <div className="w-4/5 bg-gray-200 p-5 overflow-y-auto">
+      <div className="w-4/5 bg-gray-100 h-screen overflow-y-auto overflow-x-hidden p-5">
+        {
+          loader ? (
             <Spinner />
+          ) : (
+            <Outlet />
+          )
+        }
       </div>
-            ) : (
-              <Outlet/>
-            )
-          }
+
     </div>
   );
 };
