@@ -1,21 +1,35 @@
-import { v2 as cloudinary } from "cloudinary";
-const imageUpload=async(file,folder,height,quality)=>{
-  try {
-    let options={
-        folder,
-        resource_type:"image",
-    }
-    if(height){
-        options.height=height;      
-    }
-    if(quality){
-        options.quality=quality;
-    }
-    const upload=await cloudinary.uploader.upload(file.tempFilePath,options);
-    return upload;
-  } catch (error) {
-      console.log('something went wrong while uploading image', error);
-  }
-}
+import { v2 as cloudinary } from 'cloudinary';
+import dotenv from 'dotenv'
+dotenv.config()
 
-export default imageUpload;
+cloudinary.config({
+    cloud_name : process.env.CLOUDNAME,
+    api_key : process.env.APIKEY,
+    api_secret : process.env.APISECRET
+})
+
+
+const uploadimageclodinary = async (image) => {
+    try {
+        const buffer = image?.buffer || Buffer.from(await image.arrayBuffer());
+
+        const uploadImage = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: "IMS" },(error, uploadResult) => {
+                    if (error) {
+                        return reject(error);
+                    }
+                    resolve(uploadResult);
+                }
+            );
+            uploadStream.end(buffer);
+        });
+        return uploadImage;
+
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        throw error;  
+    }
+};
+    
+export default uploadimageclodinary

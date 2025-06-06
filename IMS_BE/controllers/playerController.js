@@ -4,18 +4,18 @@ export const getPlayers = async (req, res) => {
   try {
     const players = await playerModel.find();
     if (!players) {
-      return res.status(404).json({
+      return res.json({
         message: "No players found",
         success: false
       });
     }
-    return res.status(200).json({
+    return res.json({
       message: "Players retrieved successfully",
       success: true,
       data: players
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.json({
       message: "Internal server error",
       success: false
     });
@@ -26,18 +26,39 @@ export const getPlayerById = async (req, res) => {
   try {
     const player = await playerModel.findById(id);
     if (!player) {
-      return res.status(404).json({
+      return res.json({
         message: "Player not found",
         success: false
       });
     }
-    return res.status(200).json({
+    return res.json({
       message: "Player retrieved successfully",
       success: true,
       data: player
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.json({
+      message: "Internal server error",
+      success: false
+    });
+  }
+};
+export const getPlayerByName = async (req, res) => {
+  const { name } = req.params;
+  try {
+    const player = await playerModel.findById(name);
+    if (!player) {
+      return res.json({
+        message: "Player not found",
+        success: false   
+       })
+    return res.json({
+      message: "Player retrieved successfully",
+      success: true,
+      data: player
+    });
+  } }catch (error) {
+    return res.json({
       message: "Internal server error",
       success: false
     });
@@ -121,4 +142,4 @@ export const deletePlayer = async (req, res) => {
       success: false
     });
   }
-}
+} 

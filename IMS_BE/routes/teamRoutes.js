@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import {
   createTeam,
   editTeamForTo,
@@ -7,19 +8,21 @@ import {
   getAllTeams,
   getTeam,
 } from "../controllers/teamController.js";
+import upload from "../middleware/multer.js";
 
-const router = express.Router();
 
-router.post("/create", createTeam);
+const teamRouter = express.Router();
 
-router.put("/editForTo", editTeamForTo);
+teamRouter.get("/all", getAllTeams);
 
-router.put("/editForAdmin", editTeamForAdmin);
+teamRouter.post("/create",upload.single('logo'),createTeam);
 
-router.delete("/remove", removeTeam);
+teamRouter.put("/editForTo", editTeamForTo);
 
-router.get("/all", getAllTeams);
+teamRouter.put("/editForAdmin", editTeamForAdmin);
 
-router.get("/:id", getTeam);
+teamRouter.delete("/remove", removeTeam);
 
-export default router;
+teamRouter.get("/:id", getTeam);
+
+export default teamRouter;

@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import Dashboard from "./pages/Dashboard";
 import ProfilePage from "./component/ProfilePage";
 import ManageTeams from "./component/ManageTeams";
+import ManagePlayer from "./component/ManagePlayer";
 
 const App = () => {
   const myRouter = createBrowserRouter([
@@ -15,6 +16,7 @@ const App = () => {
       children:[
         {path:'/dashboard/manageteams',element:<ManageTeams/>,},
         {path:'/dashboard/profile',element:<ProfilePage/>},
+        {path:'/dashboard/manageplayer', element:<ManagePlayer/>},
       ]
     }
   ]);
